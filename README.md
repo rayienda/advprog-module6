@@ -27,3 +27,14 @@ Before the refactoring, the code always returned a "200 OK" status with the cont
 ## Commit 4
 
 In the updated code, a new route (GET /sleep HTTP/1.1) has been added, which delays the response for 10 seconds. This means that when the browser accesses the /sleep route, the page will take longer to load because the thread will "sleep" for 10 seconds. Since the server handles requests synchronously, this slow route can cause other requests to be delayed if many users are connected simultaneously. This behavior highlights the importance of considering concurrency or asynchronous processing in a production environment.
+
+## Commit 5
+A thread pool is a collection of pre-initialized threads that are ready to handle tasks concurrently. When a new task arrives, one of these threads is assigned to execute it, while the others remain available for incoming tasks. Once a thread completes its work, it returns to the pool for future tasks. In this commit, the thread pool is implemented with a ThreadPool struct, which manages a set number of Worker instances and a Job type representing the tasks. Communication between components happens through message passing, with the ThreadPool acting as the sender and each Worker as the receiver of tasks.
+
+The code defines a ThreadPool structure that holds a fixed number of worker threads and a sender for dispatching tasks through an mpsc channel. Each worker is represented by a Worker struct that spawns a thread to continuously wait for and execute jobs from a shared receiver, protected by a mutex. A job is defined as a boxed closure that implements FnOnce() + Send + 'static, ensuring it can be safely executed in a thread. The main function dispatches tasks, such as handling TCP connections, using the execute method. This design allows the server to process multiple requests concurrently, preventing slow tasks from blocking the entire server.
+
+
+
+
+
+
