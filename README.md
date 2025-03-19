@@ -23,3 +23,7 @@ The handle_connection function can filter incoming requests. If the request is d
 ![Commit 3 After](images/after.png)
 
 Before the refactoring, the code always returned a "200 OK" status with the contents of "hello.html" without checking the requested URL. In the updated version, I added an if condition that checks if the request contains "GET /bad HTTP/1.1". If the condition is true, the code returns a "404 NOT FOUND" status and serves the "404.html" file instead. Otherwise, it continues to return the "hello.html" file with a "200 OK" status. This change makes the code more flexible by handling different types of requests and returning the appropriate response.
+
+## Commit 4
+
+In the updated code, a new route (GET /sleep HTTP/1.1) has been added, which delays the response for 10 seconds. This means that when the browser accesses the /sleep route, the page will take longer to load because the thread will "sleep" for 10 seconds. Since the server handles requests synchronously, this slow route can cause other requests to be delayed if many users are connected simultaneously. This behavior highlights the importance of considering concurrency or asynchronous processing in a production environment.
